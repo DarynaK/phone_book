@@ -63,18 +63,35 @@ const AddForm = () => {
     });
     const { register, handleSubmit } = useForm();
 
-    const onSubmit = (data, e) => {
-        e.preventDefault();
+    const isValidHandler = (data) => {
         const phoneReg = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
         if (!data.phone) {
             setError({ ...error, phoneError: 'This field cannot be empty' })
+            return false;
         } else if (!phoneReg.test(data.phone)) {
-            setError({ ...error, phoneError: 'Please use proper pattern 123-456-7899' })
+            setError({ ...error, phoneError: 'Please use proper pattern 123-456-7899' });
+            return false;
+        } else {
+            setError({ ...error, phoneError: '' });
+            return true;
         }
-        else {
-            setError({ ...error, phoneError: '' })
+    };
+
+    const onSubmit = (data, e) => {
+        e.preventDefault();
+        const isValid = isValidHandler(data);
+        if (isValid) {
             setContacts(prevState => {
-                return [...prevState, { ...data, isFavorite: false }]
+                const stateRes = [...prevState, { ...data, isFavorite: false }];
+                const res = stateRes.reduce((acc, current) => {
+                    const x = acc.find(item => item.name === current.name);
+                    if (!x) {
+                        return acc.concat([current]);
+                    } else {
+                        return acc;
+                    }
+                }, []);
+                return res;
             }
             );
             e.target[0].value = '';

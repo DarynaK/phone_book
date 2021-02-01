@@ -52,15 +52,7 @@ const PhonesList = ({ contacts, setContacts }) => {
     };
 
     const addNewItem = () => {
-        const res = contacts.reduce((acc, current) => {
-            const x = acc.find(item => item.name === current.name);
-            if (!x) {
-                return acc.concat([current]);
-            } else {
-                return acc;
-            }
-        }, []);
-        return res.map((el, key) => {
+        return contacts.map((el, key) => {
             return (
                 <ListItem key={key}>
                     <ListItemAvatar>
