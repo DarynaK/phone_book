@@ -76,7 +76,11 @@ const AddForm = () => {
             setError({ ...error, emptyFieldError: 'Please fill in all the fields' })
             return false;
         } else if (!phoneReg.test(data.phone)) {
-            setError({ ...error, phoneError: 'Please use proper pattern 123-456-7899' });
+            setError({
+                ...error,
+                phoneError: 'Please use proper pattern 123-456-7899',
+                emptyFieldError: ''
+            });
             return false;
         } else {
             setError({ ...error, phoneError: '', emptyFieldError: '' });

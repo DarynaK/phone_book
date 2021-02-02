@@ -108,7 +108,7 @@ const PhonesList = ({ contacts, setContacts }) => {
 
     const saveHandler = (index, fieldName, editFieldName, value) => {
         const newTasks = [...contacts];
-        contacts[index][editFieldName] = fields[`${fieldName}_${index}`] || value;
+        contacts[index][editFieldName] = fields[`${fieldName}_${index}`] || value[0];
         setContacts(newTasks);
         setEdit({ ...edit, [`${editFieldName}_${index}`]: !edit[`${editFieldName}_${index}`] });
     };
