@@ -4,13 +4,5 @@ export const sortList = (a, b) => {
     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 };
 
-export const deleteDublicates = (arr, field) => {
-    return arr.reduce((acc, current) => {
-        const x = acc.find(item => item[field] === current[field]);
-        if (!x) {
-            return acc.concat([current]);
-        } else {
-            return acc;
-        }
-    }, []);
-};
+export const deleteDuplicates = (arr, field) => arr.reduce((acc, current) => acc.find(item => item[field] === current[field])
+    ? acc : acc.concat([current]), []);

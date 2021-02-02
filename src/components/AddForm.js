@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PhonesList from './list';
+import PhonesList from './PhonesList';
 import { useForm } from "react-hook-form";
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
@@ -8,7 +8,7 @@ import { TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Card } from '@material-ui/core';
 import { sortList } from '../helpers';
-import { deleteDublicates } from '../helpers';
+import { deleteDuplicates } from '../helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         color: '#112D32',
         textAlign: 'left',
         marginLeft: '10px',
-        textDecoration: 'underline',
+        fontWeight: '600',
     },
     submitButton: {
         height: '54px',
@@ -54,7 +54,11 @@ const useStyles = makeStyles((theme) => ({
     errorMessage: {
         color: '#800000',
         fontSize: '12px',
-    }
+    },
+    disclaimer: {
+        fontSize: '12px',
+        textAlign: 'left',
+    },
 }));
 
 const AddForm = () => {
@@ -62,20 +66,20 @@ const AddForm = () => {
     const [contacts, setContacts] = useState([]);
     const [error, setError] = useState({
         phoneError: '',
-        nameError: '',
+        emptyFieldError: '',
     });
     const { register, handleSubmit } = useForm();
 
     const isValidHandler = (data) => {
         const phoneReg = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
-        if (!data.phone) {
-            setError({ ...error, phoneError: 'This field cannot be empty' })
+        if (!data.name || !data.phone) {
+            setError({ ...error, emptyFieldError: 'Please fill in all the fields' })
             return false;
         } else if (!phoneReg.test(data.phone)) {
             setError({ ...error, phoneError: 'Please use proper pattern 123-456-7899' });
             return false;
         } else {
-            setError({ ...error, phoneError: '' });
+            setError({ ...error, phoneError: '', emptyFieldError: '' });
             return true;
         }
     };
@@ -86,8 +90,8 @@ const AddForm = () => {
         if (isValid) {
             setContacts(prevState => {
                 const stateRes = [...prevState, { ...data, isFavorite: false }];
-                const res = deleteDublicates(stateRes, 'name');
-                const num = deleteDublicates(res, 'phone');
+                const res = deleteDuplicates(stateRes, 'name');
+                const num = deleteDuplicates(res, 'phone');
 
                 const getFavorite = num.filter(el => el.isFavorite).sort(sortList);
                 const getNotFavorite = num.filter(el => !el.isFavorite).sort(sortList);
@@ -107,14 +111,16 @@ const AddForm = () => {
             <Card className={classes.card}>
                 <Typography className={classes.subTitle}>Add New Contact</Typography>
                 <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-                    <TextField
-                        inputRef={register}
-                        id="outlined-basic"
-                        label="Name"
-                        variant="outlined"
-                        name="name"
+                    <Box>
+                        <TextField
+                            inputRef={register}
+                            id="outlined-basic"
+                            label="Name"
+                            variant="outlined"
+                            name="name"
 
-                    />
+                        />
+                    </Box>
                     <Box>
                         <TextField
                             inputRef={register}
@@ -122,10 +128,6 @@ const AddForm = () => {
                             label="Phone: 123-456-7899"
                             variant="outlined"
                             name="phone" />
-                        {error.phoneError &&
-                            <Typography className={classes.errorMessage}>
-                                {error.phoneError}
-                            </Typography>}
                     </Box>
                     <Button
                         type="submit"
@@ -133,8 +135,18 @@ const AddForm = () => {
                         color="primary"
                         className={classes.submitButton}>
                         Add
-                </Button>
+                    </Button>
                 </form>
+                {error.phoneError &&
+                    <Typography className={classes.errorMessage}>
+                        {error.phoneError}
+                    </Typography>}
+                {error.emptyFieldError &&
+                    <Typography className={classes.errorMessage}>
+                        {error.emptyFieldError}
+                    </Typography>
+                }
+                <Typography className={classes.disclaimer}>*Duplicate values are not included in the list </Typography>
             </Card>
             <PhonesList
                 contacts={contacts}

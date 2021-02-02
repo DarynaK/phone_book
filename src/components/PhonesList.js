@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
         '& span': {
             color: '#112D32',
             fontSize: '18px',
+            '&:hover': {
+                opacity: '.8',
+            },
         },
         '& .MuiListItemText-root': {
             minWidth: '239px',
@@ -47,6 +50,9 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
         color: '#254E58',
+    },
+    text: {
+        cursor: 'pointer',
     },
     "@media (max-width: 660px)": {
         phoneNumber: {
