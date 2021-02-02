@@ -91,7 +91,22 @@ const AddForm = () => {
                         return acc;
                     }
                 }, []);
-                return res;
+
+                const getFavorite = res.filter(el=>el.isFavorite);
+                const getNotFavorite= res.filter(el=>!el.isFavorite);
+                const sortFavorite = getFavorite.sort(function(a, b) {
+                    var textA = a.name.toUpperCase();
+                    var textB = b.name.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                });
+                const sortNotFavorite = getNotFavorite.sort(function(a, b) {
+                    var textA = a.name.toUpperCase();
+                    var textB = b.name.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                });
+                const concatResult = [...sortFavorite, ...sortNotFavorite]
+
+                return concatResult;
             }
             );
             e.target[0].value = '';
