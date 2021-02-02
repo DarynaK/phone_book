@@ -7,10 +7,13 @@ import { Box } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Card } from '@material-ui/core';
+import { sortList } from '../helpers';
+import { deleteDublicates } from '../helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+        flexWrap: 'wrap',
         '& > *': {
             margin: theme.spacing(1),
             width: '25ch',
@@ -83,28 +86,13 @@ const AddForm = () => {
         if (isValid) {
             setContacts(prevState => {
                 const stateRes = [...prevState, { ...data, isFavorite: false }];
-                const res = stateRes.reduce((acc, current) => {
-                    const x = acc.find(item => item.name === current.name);
-                    if (!x) {
-                        return acc.concat([current]);
-                    } else {
-                        return acc;
-                    }
-                }, []);
+                const res = deleteDublicates(stateRes, 'name');
+                const num = deleteDublicates(res, 'phone');
 
-                const getFavorite = res.filter(el=>el.isFavorite);
-                const getNotFavorite= res.filter(el=>!el.isFavorite);
-                const sortFavorite = getFavorite.sort(function(a, b) {
-                    var textA = a.name.toUpperCase();
-                    var textB = b.name.toUpperCase();
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                });
-                const sortNotFavorite = getNotFavorite.sort(function(a, b) {
-                    var textA = a.name.toUpperCase();
-                    var textB = b.name.toUpperCase();
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                });
-                const concatResult = [...sortFavorite, ...sortNotFavorite]
+                const getFavorite = num.filter(el => el.isFavorite).sort(sortList);
+                const getNotFavorite = num.filter(el => !el.isFavorite).sort(sortList);
+
+                const concatResult = [...getFavorite, ...getNotFavorite]
 
                 return concatResult;
             }

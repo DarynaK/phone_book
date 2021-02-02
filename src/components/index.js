@@ -18,7 +18,7 @@ const PhoneBook = () => {
                 variant="h3"
                 className={classes.title}>
                 My UT Phone Book
-                </Typography>
+            </Typography>
             <AddForm />
         </Grid>
     )

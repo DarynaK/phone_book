@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sortList } from '../helpers';
 import { makeStyles } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
 import { ListItem } from '@material-ui/core';
@@ -8,11 +9,13 @@ import { ListItemText } from '@material-ui/core';
 import { ListItemSecondaryAction } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import CheckIcon from '@material-ui/icons/Check';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,14 +25,34 @@ const useStyles = makeStyles((theme) => ({
             color: '#112D32',
             fontSize: '18px',
         },
-        '& .MuiListItemText-root' : {
-            flex: '2 1 auto',
+        '& .MuiListItemText-root': {
+            minWidth: '239px',
             maxWidth: '239px',
+        },
+        '& .MuiListItem-root': {
+            flexWrap: 'wrap',
+        },
+        '& .MuiBox-root': {
+            flex: '3',
+            marginTop: '10px',
+            marginLeft: '10px',
+            minWidth: '239px',
+            maxWidth: '239px',
+        },
+        "@media (max-width: 660px)": {
+            '& .MuiBox-root': {
+                marginLeft: '53px',
+            }
         }
     },
     avatar: {
         color: '#254E58',
     },
+    "@media (max-width: 660px)": {
+        phoneNumber: {
+            marginLeft: '53px',
+        },
+    }
 }));
 
 const PhonesList = ({ contacts, setContacts }) => {
@@ -57,19 +80,10 @@ const PhonesList = ({ contacts, setContacts }) => {
             newTasks.push(removedItem[0]);
         }
 
-        const getFavorite = newTasks.filter(el => el.isFavorite);
-        const getNotFavorite = newTasks.filter(el => !el.isFavorite);
-        const sortFavorite = getFavorite.sort(function (a, b) {
-            var textA = a.name.toUpperCase();
-            var textB = b.name.toUpperCase();
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-        });
-        const sortNotFavorite = getNotFavorite.sort(function (a, b) {
-            var textA = a.name.toUpperCase();
-            var textB = b.name.toUpperCase();
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-        });
-        const concatResult = [...sortFavorite, ...sortNotFavorite]
+        const getFavorite = newTasks.filter(el => el.isFavorite).sort(sortList);
+        const getNotFavorite = newTasks.filter(el => !el.isFavorite).sort(sortList);
+
+        const concatResult = [...getFavorite, ...getNotFavorite]
 
         setContacts(concatResult);
     };
@@ -104,7 +118,12 @@ const PhonesList = ({ contacts, setContacts }) => {
                     </ListItemAvatar>
                     {
                         !edit[`name_${key}`] ?
-                            <ListItemText className={classes.text} index={key} onClick={e => editFieldOpen(e, key, 'name')} flex='2'>
+                            <ListItemText
+                                className={classes.text}
+                                index={key}
+                                onClick={e => editFieldOpen(e, key, 'name')}
+                                flex='2'
+                            >
                                 {el.name}
                             </ListItemText> :
                             <>
@@ -112,25 +131,37 @@ const PhonesList = ({ contacts, setContacts }) => {
                                     defaultValue={el.name}
                                     onChange={e => { editHandler(e, key, 'field_name') }}
                                 />
-                                <IconButton edge="end" aria-label="delete">
-                                    <CheckIcon onClick={() => { saveHandler(key, 'field_name', 'name', [el.name]) }} />
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => { saveHandler(key, 'field_name', 'name', [el.name]) }}
+                                >
+                                    <CheckIcon />
                                 </IconButton>
                             </>
                     }
                     {
                         !edit[`phone_${key}`] ?
-                            <ListItemText className={classes.text} index={key} onClick={e => editFieldOpen(e, key, 'phone')} flex='1'>
+                            <ListItemText
+                                className={clsx(classes.text, classes.phoneNumber)}
+                                index={key}
+                                onClick={e => editFieldOpen(e, key, 'phone')}
+                                flex='1'
+                            >
                                 {el.phone}
                             </ListItemText> :
-                            <>
+                            <Box>
                                 <TextField
                                     defaultValue={el.phone}
                                     onChange={e => { editHandler(e, key, 'field_phone') }}
                                 />
-                                <IconButton edge="end" aria-label="delete">
-                                    <CheckIcon onClick={() => { saveHandler(key, 'field_phone', 'phone', [el.phone]) }} />
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => { saveHandler(key, 'field_phone', 'phone', [el.phone]) }} >
+                                    <CheckIcon />
                                 </IconButton>
-                            </>
+                            </Box>
                     }
                     <ListItemSecondaryAction>
                         <IconButton edge="end" onClick={(e) => favoriteElementHandler(e, key)}>
@@ -138,8 +169,11 @@ const PhonesList = ({ contacts, setContacts }) => {
                                 el.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />
                             }
                         </IconButton>
-                        <IconButton edge="end" aria-label="delete">
-                            <DeleteIcon onClick={(e) => deleteElementHandler(e, key)} />
+                        <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={(e) => deleteElementHandler(e, key)}>
+                            <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
                 </ListItem>
