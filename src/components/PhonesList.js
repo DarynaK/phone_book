@@ -9,6 +9,7 @@ import { ListItemText } from '@material-ui/core';
 import { ListItemSecondaryAction } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { Box } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
@@ -54,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
     text: {
         cursor: 'pointer',
     },
+    errorMessage: {
+        color: '#800000',
+        fontSize: '12px',
+    },
     "@media (max-width: 660px)": {
         phoneNumber: {
             marginLeft: '53px',
@@ -66,6 +71,7 @@ const PhonesList = ({ contacts, setContacts }) => {
     const classes = useStyles();
     const [edit, setEdit] = useState({});
     const [fields, setFields] = useState({});
+    const [phoneValidation, setPhoneValidation] = useState('');
 
     const deleteElementHandler = (e, id) => {
         e.preventDefault();
@@ -108,9 +114,15 @@ const PhonesList = ({ contacts, setContacts }) => {
 
     const saveHandler = (index, fieldName, editFieldName, value) => {
         const newTasks = [...contacts];
-        contacts[index][editFieldName] = fields[`${fieldName}_${index}`] || value[0];
-        setContacts(newTasks);
-        setEdit({ ...edit, [`${editFieldName}_${index}`]: !edit[`${editFieldName}_${index}`] });
+        const phoneReg = /^[1-9]\d{2}-\d{3}-\d{4}$/;
+        if(editFieldName === 'phone' && !phoneReg.test(fields[`${fieldName}_${index}`])) {
+            setPhoneValidation('Please use proper pattern 123-456-7899');
+        }else {
+            setPhoneValidation('');
+            contacts[index][editFieldName] = fields[`${fieldName}_${index}`] || value[0];
+            setContacts(newTasks);
+            setEdit({ ...edit, [`${editFieldName}_${index}`]: !edit[`${editFieldName}_${index}`] });
+        }
     };
 
     const addNewItem = () => {
@@ -167,6 +179,10 @@ const PhonesList = ({ contacts, setContacts }) => {
                                     onClick={() => { saveHandler(key, 'field_phone', 'phone', [el.phone]) }} >
                                     <CheckIcon />
                                 </IconButton>
+                                {phoneValidation &&
+                                <Typography className={classes.errorMessage}>
+                                    {phoneValidation}
+                                </Typography>}
                             </Box>
                     }
                     <ListItemSecondaryAction>

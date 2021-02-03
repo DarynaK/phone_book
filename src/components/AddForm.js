@@ -71,7 +71,7 @@ const AddForm = () => {
     const { register, handleSubmit } = useForm();
 
     const isValidHandler = (data) => {
-        const phoneReg = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
+        const phoneReg = /^[1-9]\d{2}-\d{3}-\d{4}$/;
         if (!data.name || !data.phone) {
             setError({ ...error, emptyFieldError: 'Please fill in all the fields' })
             return false;
